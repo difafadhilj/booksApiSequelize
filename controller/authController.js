@@ -6,6 +6,7 @@ const asyncMiddleware = require("express-async-handler");
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+
 exports.signup = asyncMiddleware(async (req, res) => {
   // Save User to Database
   console.log("Processing func -> SignUp");
@@ -27,6 +28,7 @@ exports.signup = asyncMiddleware(async (req, res) => {
     status: "User registered successfully!"
   });
 });
+
 exports.signin = asyncMiddleware(async (req, res) => {
   console.log("Sign-In");
   const user = await User.findOne({

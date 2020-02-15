@@ -1,21 +1,27 @@
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define("users", {
+  const Book = sequelize.define("books", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true
     },
-    name: {
+    title: {
       type: Sequelize.STRING
     },
-    username: {
+    author: {
       type: Sequelize.STRING
     },
-    email: {
+    published_date: {
+      type: Sequelize.DATE
+    },
+    pages: {
+      type: Sequelize.INTEGER
+    },
+    language: {
       type: Sequelize.STRING
     },
-    password: {
+    publisher_id: {
       type: Sequelize.STRING
     }
   });
-  return User;
+  return Book;
 };

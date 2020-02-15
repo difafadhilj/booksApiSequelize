@@ -2,9 +2,10 @@ const db = require("../app/db.js");
 const User = db.user;
 const Role = db.role;
 const asyncMiddleware = require("express-async-handler");
+
 exports.users = asyncMiddleware(async (req, res) => {
   const user = await User.findAll({
-    attributes: ["name", "username", "email"],
+    attributes: ["id", "name", "username", "email"],
     include: [
       {
         model: Role,
@@ -40,6 +41,7 @@ exports.userContent = asyncMiddleware(async (req, res) => {
     user: user
   });
 });
+
 exports.adminBoard = asyncMiddleware(async (req, res) => {
   const user = await User.findOne({
     where: { id: req.userId },
@@ -59,6 +61,7 @@ exports.adminBoard = asyncMiddleware(async (req, res) => {
     user: user
   });
 });
+
 exports.managementBoard = asyncMiddleware(async (req, res) => {
   const user = await User.findOne({
     where: { id: req.userId },
