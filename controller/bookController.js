@@ -2,10 +2,43 @@ const db = require("../app/db.js");
 const Book = db.book;
 const asyncMiddleware = require("express-async-handler");
 
+function isValid() {
+  return [
+    check("title")
+      .isString()
+      .notEmpty()
+      .withMessage("Tidak boleh kosong")
+      .isLength({ min: 5 }),
+    check("author")
+      .isLength({ min: 2 })
+      .isString()
+      .notEmpty()
+      .withMessage("Tidak boleh kosong"),
+    check("published_date")
+      .notEmpty()
+      .withMessage("Tidak boleh kosong")
+      .isISO8601(),
+    check("pages")
+      .isNumeric()
+      .notEmpty()
+      .withMessage("Tidak boleh kosong"),
+    check("language")
+      .isString()
+      .notEmpty()
+      .withMessage("Tidak boleh kosong"),
+    check("publisher_id")
+      .isString()
+      .notEmpty()
+      .withMessage("Tidak boleh kosong")
+  ];
+}
+
 exports.addBook = asyncMiddleware(async (req, res) => {
+  isValid();
   // Adding a book to database
   console.log("Processing func -> addBook");
   await Book.create({
+    id: req.body.id,
     title: req.body.title,
     author: req.body.author,
     published_date: req.body.published_date,
@@ -20,23 +53,23 @@ exports.addBook = asyncMiddleware(async (req, res) => {
 });
 
 exports.updateBook = asyncMiddleware(async (req, res) => {
-    // Updating a book
-    console.log("Processing func -> update");
-    await Book.update(
-        {
-            id: req.body.id,
-            title: req.body.title,
-            author: req.body.author,
-            published_date: req.body.published_date,
-            pages: req.body.pages,
-            language: req.body.language,
-            publisher_id: req.body.publisher_id
-        },
-        { where: { id: req.params.id } }
-    );
-    res.status(201).send({
-        status: "A book has been updated!"
-    });
+  // Updating a book
+  console.log("Processing func -> update");
+  await Book.update(
+    {
+      id: req.body.id,
+      title: req.body.title,
+      author: req.body.author,
+      published_date: req.body.published_date,
+      pages: req.body.pages,
+      language: req.body.language,
+      publisher_id: req.body.publisher_id
+    },
+    { where: { id: req.params.id } }
+  );
+  res.status(201).send({
+    status: "A book has been updated!"
+  });
 });
 
 exports.getAllBooks = asyncMiddleware(async (req, res) => {

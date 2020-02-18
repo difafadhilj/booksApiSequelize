@@ -7,13 +7,13 @@ exports.addOrder = asyncMiddleware(async (req, res) => {
   // Adding a book to database
   console.log("Processing func -> addOrder");
   const user = await User.findOne({
-    id: req.body.userId
+    where: { id: req.userId }
   });
   const book = await Book.findOne({
-    id: req.userId
+    where: { id: req.body.id }
   });
-  let orders = await user.addBook(book);
-  res.status(201).send({orders, status: "New order has been added!"});
+  let orders = await user.addBooks(book);
+  res.status(201).send({ orders, status: "New order has been added!" });
 });
 
 exports.getAllOrders = asyncMiddleware(async (req, res) => {
@@ -40,7 +40,7 @@ exports.getOrderByUserId = asyncMiddleware(async (req, res) => {
         through: ["userId", "bookId"]
       }
     ],
-    where: { id: req.params.userId }
+    where: { id: req.params.id }
   });
   res.status(200).json({ user });
 });

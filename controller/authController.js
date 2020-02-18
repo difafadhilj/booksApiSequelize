@@ -7,6 +7,10 @@ const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
+let validate = [
+
+];
+
 exports.signup = asyncMiddleware(async (req, res) => {
   // Save User to Database
   console.log("Processing func -> SignUp");
@@ -24,9 +28,21 @@ exports.signup = asyncMiddleware(async (req, res) => {
     }
   });
   await user.setRoles(roles);
-  res.status(201).send({
-    status: "User registered successfully!"
+  let sgMail = require('@sendgrid/mail');
+  sgMail.setApiKey('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');
+  let msg = {
+    to: 'dfjknight55@gmail.com',
+    from: 'dfjknight55@gmail.com',
+    subject: 'Sending with SendGrid is Fun',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  };
+  sgMail.send(msg, (error, result) => {
+    if(error) res.send({ error: error });
+    else res.status(201).send({ status: "User registered successfully!", result, user });
   });
+  sgMail.send(msg);
+
 });
 
 exports.signin = asyncMiddleware(async (req, res) => {
