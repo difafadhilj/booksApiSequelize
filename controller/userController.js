@@ -5,7 +5,7 @@ const asyncMiddleware = require("express-async-handler");
 
 exports.users = asyncMiddleware(async (req, res) => {
   const user = await User.findAll({
-    attributes: ["id", "name", "username", "email"],
+    attributes: ["id", "name", "username", "email", "password"],
     include: [
       {
         model: Role,
@@ -18,14 +18,14 @@ exports.users = asyncMiddleware(async (req, res) => {
   });
   res.status(200).json({
     description: "All User",
-    user: user
+    user
   });
 });
 
 exports.userContent = asyncMiddleware(async (req, res) => {
   const user = await User.findOne({
     where: { id: req.userId },
-    attributes: ["name", "username", "email"],
+    attributes: ["name", "username", "email", "password"],
     include: [
       {
         model: Role,

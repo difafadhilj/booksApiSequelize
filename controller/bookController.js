@@ -34,7 +34,6 @@ function isValid() {
 }
 
 exports.addBook = asyncMiddleware(async (req, res) => {
-  isValid();
   // Adding a book to database
   console.log("Processing func -> addBook");
   await Book.create({

@@ -22,7 +22,7 @@ exports.getAllOrders = asyncMiddleware(async (req, res) => {
     include: [
       {
         model: Book,
-        attributes: ["id", "title"],
+        attributes: ["title"],
         through: ["userId", "bookId"]
       }
     ]

@@ -18,10 +18,18 @@ module.exports = function(app) {
   app.post("/login", authController.signin);
 
   // get all user
-  app.get("/users", [authJwt.verifyToken], userController.users);
+  app.get(
+    "/users",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    userController.users
+  );
 
   // get 1 user according to roles
-  app.get("/api/test/user", [authJwt.verifyToken], userController.userContent);
+  app.get(
+    "/api/test/user",
+    [authJwt.verifyToken, authJwt.isPmOrAdmin],
+    userController.userContent
+  );
   app.get(
     "/api/test/pm",
     [authJwt.verifyToken, authJwt.isPmOrAdmin],
@@ -59,7 +67,11 @@ module.exports = function(app) {
   // adding orders
   app.post("/orders", [authJwt.verifyToken], orderController.addOrder);
   // get all orders
-  app.get("/orders", [authJwt.verifyToken], orderController.getAllOrders);
+  app.get(
+    "/orders",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    orderController.getAllOrders
+  );
   // get one orders
   app.get(
     "/orders/:id",

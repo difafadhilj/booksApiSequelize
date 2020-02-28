@@ -7,10 +7,6 @@ const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-let validate = [
-
-];
-
 exports.signup = asyncMiddleware(async (req, res) => {
   // Save User to Database
   console.log("Processing func -> SignUp");
@@ -28,30 +24,38 @@ exports.signup = asyncMiddleware(async (req, res) => {
     }
   });
   await user.setRoles(roles);
-  let sgMail = require('@sendgrid/mail');
-  sgMail.setApiKey('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');
+  let sgMail = require("@sendgrid/mail");
+  sgMail.setApiKey(
+    "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"
+  );
   let msg = {
-    to: 'dfjknight55@gmail.com',
-    from: 'dfjknight55@gmail.com',
-    subject: 'Sending with SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    to: "dfjknight55@gmail.com",
+    from: "dfjknight55@gmail.com",
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<strong>and easy to do anywhere, even with Node.js</strong>"
   };
   sgMail.send(msg, (error, result) => {
-    if(error) res.send({ error: error });
-    else res.status(201).send({ status: "User registered successfully!", result, user });
+    if (error) res.send({ error: error });
+    else
+      res.status(201).send({ status: "User registered successfully!", user });
   });
   sgMail.send(msg);
-
 });
 
 exports.signin = asyncMiddleware(async (req, res) => {
   console.log("Sign-In");
+
   const user = await User.findOne({
     where: {
       username: req.body.username
+    },
+    include: {
+      model: Role,
+      through: ["roleId", "userId"]
     }
   });
+
   if (!user) {
     return res.status(404).send({
       auth: false,
@@ -67,12 +71,17 @@ exports.signin = asyncMiddleware(async (req, res) => {
       reason: "Invalid Password!"
     });
   }
+
   const token = jwt.sign({ id: user.id }, config.secret, {
     expiresIn: 86400 // expires in 24 hours
   });
+
   res.status(200).send({
+    id: user.id,
     auth: true,
     type: "Bearer",
-    accessToken: token
+    accessToken: token,
+    role: user.roles[0].name,
+    msg: "Login Successfully!"
   });
 });
