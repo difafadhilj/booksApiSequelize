@@ -1,33 +1,16 @@
 const db = require("../app/db.js");
 const config = require("../app/config.js");
 const User = db.user;
-const Role = db.role;
 const asyncMiddleware = require("express-async-handler");
-const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-exports.signup = asyncMiddleware(async (req, res) => {
-  // Save User to Database
-  console.log("Processing func -> SignUp");
-  const user = await User.create({
-    name: req.body.name,
-    username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
-  });
-  const roles = await Role.findAll({
-    where: {
-      name: {
-        [Op.or]: req.body.roles
-      }
-    }
-  });
-  await user.setRoles(roles);
+emailHandler = () => {
   let sgMail = require("@sendgrid/mail");
   sgMail.setApiKey(
     "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"
   );
+
   let msg = {
     to: "dfjknight55@gmail.com",
     from: "dfjknight55@gmail.com",
@@ -41,21 +24,33 @@ exports.signup = asyncMiddleware(async (req, res) => {
       res.status(201).send({ status: "User registered successfully!", user });
   });
   sgMail.send(msg);
+};
+
+exports.signup = asyncMiddleware(async (req, res) => {
+  // Save User to Database
+  console.log("Processing func -> SignUp");
+  let user = await User.create({
+    name: req.body.name,
+    username: req.body.username,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 8),
+    admin: req.body.admin,
+    status: req.body.status
+  });
+  if (res.status(201)) {
+    res.status(201).send({ status: "User registered successfully!", user });
+  } else {
+    res.send({ error: error });
+  }
 });
 
 exports.signin = asyncMiddleware(async (req, res) => {
   console.log("Sign-In");
-
   const user = await User.findOne({
     where: {
       username: req.body.username
-    },
-    include: {
-      model: Role,
-      through: ["roleId", "userId"]
     }
   });
-
   if (!user) {
     return res.status(404).send({
       auth: false,
@@ -76,12 +71,15 @@ exports.signin = asyncMiddleware(async (req, res) => {
     expiresIn: 86400 // expires in 24 hours
   });
 
-  res.status(200).send({
-    id: user.id,
-    auth: true,
-    type: "Bearer",
-    accessToken: token,
-    role: user.roles[0].name,
-    msg: "Login Successfully!"
-  });
+  if (user.status) {
+    res.status(200).send({
+      id: user.id,
+      auth: true,
+      type: "Bearer",
+      accessToken: token,
+      msg: "Login Successfully!"
+    });
+  } else {
+    res.status(401).send({ msg: "Account blocked!" });
+  }
 });

@@ -1,83 +1,52 @@
 const db = require("../app/db.js");
 const User = db.user;
-const Role = db.role;
 const asyncMiddleware = require("express-async-handler");
 
 exports.users = asyncMiddleware(async (req, res) => {
-  const user = await User.findAll({
-    attributes: ["id", "name", "username", "email", "password"],
-    include: [
-      {
-        model: Role,
-        attributes: ["id", "name"],
-        through: {
-          attributes: ["userId", "roleId"]
-        }
-      }
-    ]
-  });
+  const user = await User.findAll();
   res.status(200).json({
     description: "All User",
     user
   });
 });
 
-exports.userContent = asyncMiddleware(async (req, res) => {
+exports.oneUser = asyncMiddleware(async (req, res) => {
   const user = await User.findOne({
-    where: { id: req.userId },
-    attributes: ["name", "username", "email", "password"],
-    include: [
-      {
-        model: Role,
-        attributes: ["id", "name"],
-        through: {
-          attributes: ["userId", "roleId"]
-        }
-      }
-    ]
+    where: { id: req.userId }
   });
-  res.status(200).json({
-    description: "User Content Page",
-    user: user
-  });
+  if (res.status(200)) {
+    res.status(200).json({
+      description: "User Content Page",
+      user
+    });
+  } else {
+    res.send({
+      error: error
+    });
+  }
+});
+
+exports.updateStatus = asyncMiddleware(async (req, res) => {
+  // Updating user status
+  console.log("Processing func -> update");
+  await User.update({ status: true }, { where: { id: req.params.id } });
+  if (res.status(201)) {
+    res.status(201).send({
+      status: "This user has been released!"
+    });
+  } else {
+    res.send({
+      error: error
+    });
+  }
 });
 
 exports.adminBoard = asyncMiddleware(async (req, res) => {
   const user = await User.findOne({
-    where: { id: req.userId },
-    attributes: ["name", "username", "email"],
-    include: [
-      {
-        model: Role,
-        attributes: ["id", "name"],
-        through: {
-          attributes: ["userId", "roleId"]
-        }
-      }
-    ]
+    where: { id: req.userId }
   });
   res.status(200).json({
     description: "Admin Board",
-    user: user
-  });
-});
-
-exports.managementBoard = asyncMiddleware(async (req, res) => {
-  const user = await User.findOne({
-    where: { id: req.userId },
-    attributes: ["name", "username", "email"],
-    include: [
-      {
-        model: Role,
-        attributes: ["id", "name"],
-        through: {
-          attributes: ["userId", "roleId"]
-        }
-      }
-    ]
-  });
-  res.status(200).json({
-    description: "Management Board",
-    user: user
+    user
   });
 });

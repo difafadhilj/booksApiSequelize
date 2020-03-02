@@ -2,81 +2,94 @@ const verifySignUp = require("./verifySignUp");
 const authJwt = require("./verifyJwtToken");
 const authController = require("../controller/authController.js");
 const userController = require("../controller/userController.js");
-const bookController = require("../controller/bookController.js");
-const orderController = require("../controller/orderController.js");
+const articleController = require("../controller/articleController.js");
+const commentController = require("../controller/commentController.js");
 
 module.exports = function(app) {
-  // Auth
+  // ----- Auth -----
+  // register
   app.post(
     "/register",
-    [
-      verifySignUp.checkDuplicateUserNameOrEmail,
-      verifySignUp.checkRolesExisted
-    ],
+    [verifySignUp.checkDuplicateUserNameOrEmail],
     authController.signup
   );
+  //login
   app.post("/login", authController.signin);
 
+  // ----- User -----
   // get all user
   app.get(
     "/users",
     [authJwt.verifyToken, authJwt.isAdmin],
     userController.users
   );
-
-  // get 1 user according to roles
+  // get user by id
   app.get(
-    "/api/test/user",
-    [authJwt.verifyToken, authJwt.isPmOrAdmin],
-    userController.userContent
-  );
-  app.get(
-    "/api/test/pm",
-    [authJwt.verifyToken, authJwt.isPmOrAdmin],
-    userController.managementBoard
-  );
-  app.get(
-    "/api/test/admin",
+    "/users/:id",
     [authJwt.verifyToken, authJwt.isAdmin],
-    userController.adminBoard
+    userController.oneUser
   );
-
-  // adding a book
-  app.post(
-    "/books",
-    [authJwt.verifyToken, authJwt.isAdmin],
-    bookController.addBook
-  );
-  // get all book
-  app.get("/books", [authJwt.verifyToken], bookController.getAllBooks);
-  // get a book
-  app.get("/books/:id", [authJwt.verifyToken], bookController.getOneBook);
-  // delete a book
-  app.delete(
-    "/books/:id",
-    [authJwt.verifyToken, authJwt.isAdmin],
-    bookController.deleteBook
-  );
-  // update a book
+  // update user status
   app.put(
-    "/books/:id",
+    "/users/:id",
     [authJwt.verifyToken, authJwt.isAdmin],
-    bookController.updateBook
+    userController.updateStatus
   );
 
-  // adding orders
-  app.post("/orders", [authJwt.verifyToken], orderController.addOrder);
-  // get all orders
+  // ----- Article -----
+  // adding an article
+  app.post("/articles", [authJwt.verifyToken], articleController.addArticle);
+
+  // getting all articles
+  app.get("/articles", articleController.getAllArticles);
+
+  // get article by id
   app.get(
-    "/orders",
-    [authJwt.verifyToken, authJwt.isAdmin],
-    orderController.getAllOrders
-  );
-  // get one orders
-  app.get(
-    "/orders/:id",
+    "/articles/:id",
     [authJwt.verifyToken],
-    orderController.getOrderByUserId
+    articleController.getArticleById
+  );
+
+  // get article by user id
+  app.get(
+    "/articles/user/:id",
+    [authJwt.verifyToken],
+    articleController.getArticleByUserId
+  );
+
+  // update an article
+  app.put(
+    "/articles/:id",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    articleController.updateStatus
+  );
+
+  // delete an article
+  app.delete(
+    "/articles/:id",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    articleController.deleteArticle
+  );
+
+  // ----- Comment -----
+  // Adding a comment
+  app.post(
+    "/comments/:id",
+    [authJwt.verifyToken],
+    commentController.addComment
+  );
+  // Update comment status
+  app.put(
+    "/comments/:id",
+    [authJwt.verifyToken],
+    commentController.updateCommentStatus
+  );
+
+  // ---- SEARCH HANDLER ----
+  app.get(
+    "/articles/search",
+    [authJwt.verifyToken],
+    articleController.searchArticle
   );
 
   // error handler 404

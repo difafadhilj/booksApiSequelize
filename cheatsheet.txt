@@ -1,0 +1,57 @@
+BACKEND
+
+1. Admin 
+    Dashboard : 
+    1. User
+        - List user (get all user) (GET) : (Done)
+            a. Get user by id (GET) (Done)
+            b. Block user status (PUT) (Done)
+
+    2. Article
+        - Show all article : (Done)
+            a. Hide/show article (Done)
+        - Add article (Done)
+        - Edit ??
+        - Delete (Done)
+
+    3. Comment
+        - Create comment (Done)
+        - Show all comment (Done): 
+            a. Show/hide comment (Done)
+
+2. User
+    - Dashboard : 
+        a. My article (Show article by userId) (Done)
+        b. Create article (Done)
+    - Show all article : (Done)
+        a. comment (Done)
+
+3. Guest
+    - Read all showed article (Done)
+
+- Login (Done)
+- Register (Done)
+
+
+FRONTEND
+
+GUEST :
+- Register 
+- Login
+- Dashboard
+- Show all article
+- Read article
+- Search article
+
+USER :
+- Show all article
+- Read article
+- Comment on an article
+- Dashboard : 
+    a. My article
+    b. Create an article
+
+ADMIN :
+- Show all article (CRUD + Search)
+- Show all user (CRUD + Search)
+- Show all comment (CRUD + Search)
