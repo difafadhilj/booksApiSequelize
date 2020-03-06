@@ -36,22 +36,72 @@ BACKEND
 FRONTEND
 
 GUEST :
-- Register 
-- Login
-- Dashboard
-- Show all article
-- Read article
+- Register (Done)
+- Login (Done)
+- Dashboard (Done)
+- Show all article (Done)
+- Read article (Done)
 - Search article
 
 USER :
-- Show all article
-- Read article
-- Comment on an article
+- Show all article (Done)
+- Read article (Done)
+    a. Show comment based on post (Done)
+    b. Comment on an article (Done)
 - Dashboard : 
-    a. My article
-    b. Create an article
+    a. My article (Done)
+    b. Create an article (Done)
 
 ADMIN :
 - Show all article (CRUD + Search)
 - Show all user (CRUD + Search)
 - Show all comment (CRUD + Search)
+
+
+
+
+import React, { useState } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Search from "./components/Search";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import NotFound from "./components/NotFound";
+import ArticleDetails from "./components/ArticleDetails";
+import MyArticles from "./components/MyArticles";
+import CreateArticle from "./components/CreateArticle";
+import User from "./components/User";
+import Comment from "./components/Comment";
+import Main from "./components/Main";
+
+function App() {
+  let people = ["A", "B", "C", "D", "E"];
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  };
+
+  const results = !searchTerm
+    ? people
+    : people.filter(person =>
+        person.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+      );
+
+  return (
+    <div className="App">
+      <input
+        type="text"
+        placeholder="Search"
+        value={searchTerm}
+        onChange={handleChange}
+      />
+      <ul>
+        {results.map(item => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;

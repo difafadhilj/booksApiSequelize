@@ -35,6 +35,12 @@ module.exports = function(app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     userController.updateStatus
   );
+  // delete user
+  app.delete(
+    "/users/:id",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    userController.deleteUser
+  );
 
   // ----- Article -----
   // adding an article
@@ -44,11 +50,7 @@ module.exports = function(app) {
   app.get("/articles", articleController.getAllArticles);
 
   // get article by id
-  app.get(
-    "/articles/:id",
-    [authJwt.verifyToken],
-    articleController.getArticleById
-  );
+  app.get("/articles/:id", articleController.getArticleById);
 
   // get article by user id
   app.get(
@@ -60,7 +62,7 @@ module.exports = function(app) {
   // update an article
   app.put(
     "/articles/:id",
-    [authJwt.verifyToken, authJwt.isAdmin],
+    [authJwt.verifyToken],
     articleController.updateStatus
   );
 
@@ -84,6 +86,12 @@ module.exports = function(app) {
     [authJwt.verifyToken],
     commentController.updateCommentStatus
   );
+  // Get all comments
+  app.get("/comments", commentController.getAllComments);
+  // Get all comments based on article_id
+  app.get("/comments/:id", commentController.getCommentsByArticleId);
+  // Delete comment
+  app.delete("/comments/:id", commentController.deleteComment);
 
   // ---- SEARCH HANDLER ----
   app.get(

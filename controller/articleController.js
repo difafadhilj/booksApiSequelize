@@ -1,6 +1,7 @@
 const db = require("../app/db.js");
 const Article = db.article;
 const User = db.user;
+const Comment = db.comment;
 const asyncMiddleware = require("express-async-handler");
 
 exports.addArticle = asyncMiddleware(async (req, res) => {
@@ -8,7 +9,7 @@ exports.addArticle = asyncMiddleware(async (req, res) => {
   await Article.create({
     title: req.body.title,
     content: req.body.content,
-    status: req.body.status,
+    status: true,
     user_id: req.userId
   });
   if (res.status(201)) {
@@ -22,11 +23,12 @@ exports.addArticle = asyncMiddleware(async (req, res) => {
 
 exports.getAllArticles = asyncMiddleware(async (req, res) => {
   const article = await Article.findAll({
-    include: {
-      model: User,
-      attribute: ["name"],
-      through: ["user_id", "id"]
-    }
+    include: [
+      {
+        model: User,
+        attributes: ["name"]
+      }
+    ]
   });
   if (res.status(200)) {
     res.status(200).send({ article });
@@ -37,7 +39,23 @@ exports.getAllArticles = asyncMiddleware(async (req, res) => {
 
 exports.getArticleById = asyncMiddleware(async (req, res) => {
   const article = await Article.findOne({
-    where: { id: req.params.id }
+    where: { id: req.params.id },
+    include: [
+      {
+        model: Comment,
+        attributes: ["content"],
+        include: [
+          {
+            model: User,
+            attributes: ["name"]
+          }
+        ]
+      },
+      {
+        model: User,
+        attributes: ["name"]
+      }
+    ]
   });
   if (res.status(200)) {
     res.status(200).send({ article });
@@ -48,7 +66,13 @@ exports.getArticleById = asyncMiddleware(async (req, res) => {
 
 exports.getArticleByUserId = asyncMiddleware(async (req, res) => {
   const article = await Article.findAll({
-    where: { user_id: req.params.id }
+    where: { user_id: req.params.id },
+    include: [
+      {
+        model: User,
+        attributes: ["name"]
+      }
+    ]
   });
   if (res.status(200)) {
     res.status(200).send({ article });
@@ -60,7 +84,10 @@ exports.getArticleByUserId = asyncMiddleware(async (req, res) => {
 exports.updateStatus = asyncMiddleware(async (req, res) => {
   // Updating an article
   console.log("Processing func -> update");
-  await Article.update({ status: true }, { where: { id: req.params.id } });
+  await Article.update(
+    { status: req.body.status },
+    { where: { id: req.params.id } }
+  );
   if (res.status(201)) {
     res.status(201).send({
       status: "An article has been deployed!"

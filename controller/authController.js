@@ -34,8 +34,8 @@ exports.signup = asyncMiddleware(async (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    admin: req.body.admin,
-    status: req.body.status
+    admin: false,
+    status: true
   });
   if (res.status(201)) {
     res.status(201).send({ status: "User registered successfully!", user });
@@ -77,7 +77,8 @@ exports.signin = asyncMiddleware(async (req, res) => {
       auth: true,
       type: "Bearer",
       accessToken: token,
-      msg: "Login Successfully!"
+      msg: "Login Successfully!",
+      user
     });
   } else {
     res.status(401).send({ msg: "Account blocked!" });

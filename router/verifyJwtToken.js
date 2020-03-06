@@ -5,7 +5,7 @@ const User = db.user;
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"] || req.headers["authorization"]; // Express headers are auto convertedto lowercase
-  if (token !== undefined && token.startsWith("Bearer ")) {
+  if (token !== null && token.startsWith("Bearer ")) {
     // Remove Bearer from string
     token = token.slice(7, token.length);
   }
@@ -24,6 +24,7 @@ verifyToken = (req, res, next) => {
         message: "Fail to Authentication. Error -> " + err
       });
     }
+
     req.userId = decoded.id;
     next();
   });
@@ -31,7 +32,7 @@ verifyToken = (req, res, next) => {
 
 isAdmin = (req, res, next) => {
   User.findByPk(req.userId).then(user => {
-    if (user.admin) {
+    if (String(user.admin) === "true") {
       next();
       return;
     }

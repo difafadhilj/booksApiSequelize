@@ -33,4 +33,16 @@ db.article.hasMany(db.comment, {
   foreignKey: "article_id"
 });
 
+db.article.belongsTo(db.user, {
+  foreignKey: "user_id"
+});
+
+db.comment.belongsTo(db.user, {
+  foreignKey: "user_id"
+});
+
+db.comment.belongsTo(db.article, {
+  foreignKey: "article_id"
+});
+
 module.exports = db;
